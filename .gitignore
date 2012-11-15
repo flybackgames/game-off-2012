@@ -1,0 +1,13 @@
+.DS_Store
+Library/
+Temp
+*.csproj
+*.pidb
+*.sln
+build
+obj
+desktop.ini
+*.suo
+*.app
+*.userprefs
+*.unityproj
