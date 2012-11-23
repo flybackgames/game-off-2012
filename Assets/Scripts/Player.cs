@@ -57,6 +57,13 @@ public class Player : MonoBehaviour {
 				0f
 			);
 		}
+		else {
+			Velocity = new Vector3(
+				0f,
+				Velocity.y,
+				0f
+			);
+		}
 	}
 	
 	void ApplyJumping()
