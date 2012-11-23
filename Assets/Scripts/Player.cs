@@ -8,6 +8,7 @@
 // 
 using UnityEngine;
 using System.Collections;
+using SmoothMoves;
 
 public class Player : MonoBehaviour {
 	
@@ -30,9 +31,14 @@ public class Player : MonoBehaviour {
 	
 	public Vector3 Velocity = Vector3.zero;
 	
-	void Start () {
+	public BoneAnimation personaje;
+	
+	void Start ()
+	{
 		if (WalkSpeed == 0)
-			Debug.LogWarning("Player walk speed is 0, it will not move");
+			Debug.LogWarning ("Player walk speed is 0, it will not move");
+		
+		personaje = gameObject.transform.GetComponentInChildren<BoneAnimation> ();
 	}
 	
 	void Update () {
@@ -42,30 +48,47 @@ public class Player : MonoBehaviour {
 		ApplyGravity();
 		
 		Debug.Log (Velocity);
-		transform.Translate(Velocity);
+		transform.Translate(Velocity,Space.World);
 	}
 	
-	void ApplyMovement()
+	void ApplyMovement ()
 	{
-		float translation = Input.GetAxis("Horizontal");
-		if ( (translation < 0 && (Blocked != BlockDir.LEFT || GrabStickedObject))
+		float translation = Input.GetAxis ("Horizontal");
+		if ((translation < 0 && (Blocked != BlockDir.LEFT || GrabStickedObject))
 			||
-			(translation > 0 && (Blocked != BlockDir.RIGHT || GrabStickedObject)) ) {
+			(translation > 0 && (Blocked != BlockDir.RIGHT || GrabStickedObject))) {
 			// half speed while pulling/pushing
 			float speed = (GrabStickedObject ? WalkSpeed / 2f : WalkSpeed);
-			Velocity = new Vector3(
+			Velocity = new Vector3 (
 				translation * Time.deltaTime * speed,
 				Velocity.y,
 				0f
 			);
-		}
-		else {
-			Velocity = new Vector3(
+		} else {
+			Velocity = new Vector3 (
 				0f,
 				Velocity.y,
 				0f
 			);
 		}
+		
+		if (translation > 0) {
+			if (transform.rotation.eulerAngles.y != 0)
+				transform.eulerAngles = new Vector3 (0, 0, 0);
+			
+			personaje.CrossFade ("Walk");
+		} else if (translation < 0) {
+			if (transform.rotation.eulerAngles.y == 0)
+				transform.eulerAngles = new Vector3 (0, 180, 0);
+			
+			personaje.CrossFade ("Walk");
+			
+		} else {
+			personaje.CrossFade ("Stand");
+		}
+		
+		
+		
 	}
 	
 	void ApplyGravity()
@@ -99,19 +122,19 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void ApplyGrabbing()
+	void ApplyGrabbing ()
 	{
-		if (Input.GetKey(KeyCode.Space)) {
+		if (Input.GetKey (KeyCode.Space)) {
 			if (StickedObject != null && !GrabStickedObject) {
 				// pull / push object
 				GrabStickedObject = true;
-				GrabCrate(StickedObject);
+				GrabCrate (StickedObject);
+				
 			}
-		}
-		else if (GrabStickedObject){
+		} else if (GrabStickedObject) {
 			GrabStickedObject = false;
 			if (StickedObject != null) {
-				ReleaseCrate(StickedObject);
+				ReleaseCrate (StickedObject);
 			}
 		}
 	}
