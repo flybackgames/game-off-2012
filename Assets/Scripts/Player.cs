@@ -39,7 +39,9 @@ public class Player : MonoBehaviour {
 		ApplyMovement();
 		ApplyGrabbing();
 		ApplyJumping();
+		ApplyGravity();
 		
+		Debug.Log (Velocity);
 		transform.Translate(Velocity);
 	}
 	
@@ -66,16 +68,8 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void ApplyJumping()
+	void ApplyGravity()
 	{
-		if (!GrabStickedObject && !IsJumping && IsGrounded && Input.GetKey(KeyCode.UpArrow)) {
-			IsJumping = true;
-			Velocity = new Vector3(
-				Velocity.x,
-				JumpHeight,
-				0f
-			);
-		}
 		if (!IsGrounded) {
 			Velocity = new Vector3(
 				Velocity.x,
@@ -87,6 +81,19 @@ public class Player : MonoBehaviour {
 			Velocity = new Vector3(
 				Velocity.x,
 				0f,
+				0f
+			);
+		}
+	}
+	
+	void ApplyJumping()
+	{
+		if (!GrabStickedObject && !IsJumping && IsGrounded && Input.GetKeyDown(KeyCode.UpArrow)) {
+			IsJumping = true;
+			IsGrounded = false;
+			Velocity = new Vector3(
+				Velocity.x,
+				JumpHeight * Time.deltaTime,
 				0f
 			);
 		}
@@ -162,6 +169,7 @@ public class Player : MonoBehaviour {
 		GUI.Label (new Rect(10f, 10f, 100f, 20f), "Blocked: "+Blocked);
 		GUI.Label (new Rect(10f, 30f, 100f, 20f), "Grabbed: "+GrabStickedObject);
 		GUI.Label (new Rect(10f, 50f, 100f, 20f), "Grounded: "+IsGrounded);
+		GUI.Label (new Rect(10f, 70f, 100f, 20f), "Jumping: "+IsJumping);
 		
 		GUI.Label (new Rect(10f, 100f, 500f, 20f), "ARROWS TO MOVE, PRESS SPACE TO GRAB WHEN NEXT TO CRATE");
 	}
